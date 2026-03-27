@@ -23,6 +23,8 @@ let i = 1;
 // --- Config ---
 const SEGMENT_PREFIX = "gorgias";
 
+const exists = [];
+
 // --- Axios instance ---
 const api = axios.create({
   baseURL: BASE_URL,
@@ -71,6 +73,7 @@ k
   } catch (error) {
     if (error.response?.status === 409) {
       console.log(`⚠️ segment already exists: ${segmentName}`);
+      exists[segmentName] = 'true';
     } else {
       // throw error;
       console.log('error segment creation');
@@ -137,7 +140,9 @@ k
 
  async function enableSegment(segmentName) {
     console.log('enableSegment');
-
+    if(exists[segmentName]) {
+      console.log('skipping ' + segmentName);
+    }
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
