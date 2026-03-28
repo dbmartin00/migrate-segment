@@ -49,7 +49,7 @@ There are four key steps that show as numbered green checks in the logging:
  3. Enable segment in your environment
  4. Upload keys to your segment
 
-The deletion clears the deck for a fresh segment.  This may not be desired behavior.  A "skip cache" of finished segments could be implemented: TODO
+The deletion clears the deck for a fresh segment.  This may not be desired behavior.  A "skip cache" of finished segments could be implemented.  This approach takes a clean slated to each segment.
 
 Segments are not ready for keys on creation. They need to be enabled an an environment, step three.
 
@@ -68,6 +68,8 @@ Keys should be JSON imported from external source.
 The back end can't handle too many expensive segment changes at once.  The tool is throttled.   At ten seconds per segment, the tool is consistently successul.  Lowering or removing the throttle will have bad results.
 
 It is normal for uploadKeys to run twice.
+
+It takes about ninety seconds to create ten segments.
 
 ## Tools
 
