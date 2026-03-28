@@ -21,7 +21,7 @@ const allKeys = ["user_1", "user_2", "user_3"]; // add more as needed
 let i = 1;
 
 // --- Config ---
-const SEGMENT_PREFIX = "gorgias";
+const SEGMENT_PREFIX = "gorgeous";
 
 
 // --- Axios instance ---
@@ -84,7 +84,7 @@ async function createSegment(segmentName) {
 
 // --- Upload keys to a segment ---
 
- async function uploadKeys(segmentName, keys) {
+ async function uploadKeys(segmentName, keys, retry) {
 
         const url = `${BASE_URL}/segments/${ENVIRONMENT_ID}/${segmentName}/uploadKeys?replace=true`;
 
@@ -103,16 +103,23 @@ async function createSegment(segmentName) {
 
         await axios(updateConfig)
         .then(function (response) {
-          console.log('keys updated to segment: ' + segmentName);
+          console.log('✅ keys: ' + segmentName);
         })
         .catch(function(error) {
-          console.log('zero keys updated to segment: ' + segmentName);
+          console.log('🚫 keys updated to segment: ' + segmentName);
+          // retry
+          if(retry) {
+            //await sleep(1000);
+            
+            uploadKeys(segmentName, keys, false);
+
+          }
         });
 }
 
 
  async function deleteSegment(segmentName) {
-    console.log(`⚠️ deleteSegment segment: ${segmentName}`);
+    console.log(` deleteSegment segment: ${segmentName}`);
 
 
     let config = {
@@ -128,7 +135,7 @@ async function createSegment(segmentName) {
         "description": 'burning existing segmentName'
       }
     };
-    console.log('deleteSegment', config);
+    // console.log('deleteSegment', config);
     axios.request(config)
     .then((response) => {
     console.log(`⚠️ deleteSegment segment: ${segmentName} success`);
@@ -145,8 +152,8 @@ async function createSegment(segmentName) {
 
 
 
- async function enableSegment(segmentName) {
-    console.log('enableSegment');
+ async function enableSegmentInEnvironment(segmentName) {
+    console.log('⚠️ enableSegmentInEnvironment');
 
     let config = {
       method: 'post',
@@ -160,10 +167,11 @@ async function createSegment(segmentName) {
     };
     axios.request(config)
     .then((response) => {
-      console.log(`⚠️ enabled segment: ${segmentName}`);
+      console.log(`⚠️ enableSegmentInEnvironment segment: ${segmentName}`);
     })
     .catch((error) => {
       console.log(`⚠️ Segment already exists: ${segmentName}`);
+      console.log('enableSegmentInEnvironment', error);
     });
   }
 
@@ -174,17 +182,17 @@ function sleep(ms) {
 // --- Main process ---
 async function main() {
 
-  const length = 5;
+  const length = 10;
 
   for (let i = 0; i < length; i++) {
     console.log('i', i);
     segmentName = `${SEGMENT_PREFIX}_${i + 1}`;
     await createSegment(segmentName); 
     const keys = {keys: allKeys, comment:"migrated segment"};
-    await enableSegment(segmentName);
-    await uploadKeys(segmentName, keys);
+    await enableSegmentInEnvironment(segmentName)
+    await uploadKeys(segmentName, keys, true);
 
-    sleep(1000);
+    await sleep(10000);
   }
 
   console.log("🎉 All done.");
