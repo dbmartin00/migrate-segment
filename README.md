@@ -41,7 +41,7 @@ npm install
 node migrate-segment.js
 ```
 
-The default script creates ten segments in the environment specified by the environment variables.
+The default script creates three sample JSON segments from files in a src/ directory argument.
 
 ## How does it work?
 
