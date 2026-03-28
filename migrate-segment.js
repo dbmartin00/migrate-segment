@@ -8,7 +8,7 @@ const TRAFFIC_TYPE = process.env.TRAFFIC_TYPE;
   
 if (!HARNESS_API_KEY || !WORKSPACE_ID || !ENVIRONMENT_ID || !TRAFFIC_TYPE) {
   console.error(
-    `Missing required environment variables: ${HARNESS_API_KEY}, ${WORKSPACE_ID}, ${ENVIRONMENT_ID}, ${TRAFFIC_TYPE}`
+    `Missing required environment variables: HARNESS_API_KEY: ${HARNESS_API_KEY} WORKSPACE_ID ${WORKSPACE_ID}, ENVIRONMENT_ID ${ENVIRONMENT_ID}, TRAFFIC_TYPE ${TRAFFIC_TYPE}`
   );
   process.exit(1);
 }
@@ -21,7 +21,7 @@ const allKeys = ["user_1", "user_2", "user_3"]; // add more as needed
 let i = 1;
 
 // --- Config ---
-const SEGMENT_PREFIX = "gorgeous";
+const SEGMENT_PREFIX = "gus";
 
 
 // --- Axios instance ---
@@ -52,13 +52,13 @@ async function loggedRequest(method, url, data) {
 // --- Create a segment with owners ---
 async function createSegment(segmentName) {
   await deleteSegment(segmentName);
-  console.log(`⚠️ createSegment segment: ${segmentName}`);
+  console.log('✅ 2 - createSegment start: ' + segmentName);
 
   try {
     const res = await loggedRequest(
       "post",
       `/segments/ws/${WORKSPACE_ID}/trafficTypes/${TRAFFIC_TYPE}`,
-      {
+      { 
         name: segmentName,
         description: "Migrated segment",
         owners: [{ id: "_project_all_users", type: "Team", name: "All Users" }]
@@ -85,6 +85,7 @@ async function createSegment(segmentName) {
 // --- Upload keys to a segment ---
 
  async function uploadKeys(segmentName, keys, retry) {
+    console.log('✅ 4 - uploadKeys: ' + segmentName);
 
         const url = `${BASE_URL}/segments/${ENVIRONMENT_ID}/${segmentName}/uploadKeys?replace=true`;
 
@@ -119,8 +120,7 @@ async function createSegment(segmentName) {
 
 
  async function deleteSegment(segmentName) {
-    console.log(` deleteSegment segment: ${segmentName}`);
-
+    console.log('✅ 1 delete ' + segmentName);
 
     let config = {
       method: 'delete',
@@ -142,8 +142,12 @@ async function createSegment(segmentName) {
       console.log('deleteSegment success');
     })
     .catch((error) => {
-    console.log(`⚠️ deleteSegment segment: ${segmentName} fail`);
-      console.log(error);
+      console.log('error delete: ' + segmentName);
+      if (error.response?.status === 404) {
+        console.log(`no segment to delete (first run?): ${segmentName}`);
+      } else {
+        console.log('error ' + error);
+      }      
     });
 
     await sleep(1000);
@@ -153,6 +157,8 @@ async function createSegment(segmentName) {
 
 
  async function enableSegmentInEnvironment(segmentName) {
+    console.log('✅ 3 - enableSegmentInEnvironment: ' + segmentName);
+
     console.log('⚠️ enableSegmentInEnvironment');
 
     let config = {
@@ -167,10 +173,10 @@ async function createSegment(segmentName) {
     };
     axios.request(config)
     .then((response) => {
-      console.log(`⚠️ enableSegmentInEnvironment segment: ${segmentName}`);
+      console.log(`enableSegmentInEnvironment segment: ${segmentName}`);
     })
     .catch((error) => {
-      console.log(`⚠️ Segment already exists: ${segmentName}`);
+      console.log(`Segment already exists: ${segmentName}`);
       console.log('enableSegmentInEnvironment', error);
     });
   }
@@ -181,11 +187,10 @@ function sleep(ms) {
 
 // --- Main process ---
 async function main() {
-
+  console.log('✅ main');
   const length = 10;
 
-  for (let i = 0; i < length; i++) {
-    console.log('i', i);
+  for (let i = 0; i < length; i++) {    
     segmentName = `${SEGMENT_PREFIX}_${i + 1}`;
     await createSegment(segmentName); 
     const keys = {keys: allKeys, comment:"migrated segment"};
@@ -193,6 +198,7 @@ async function main() {
     await uploadKeys(segmentName, keys, true);
 
     await sleep(10000);
+    console.log('======================');
   }
 
   console.log("🎉 All done.");
