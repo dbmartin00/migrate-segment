@@ -51,8 +51,8 @@ async function loggedRequest(method, url, data) {
 
 // --- Create a segment with owners ---
 async function createSegment(segmentName) {
-  console.log('createSegment');
-  console.log('segmentName', segmentName);
+  await deleteSegment(segmentName);
+  console.log(`⚠️ createSegment segment: ${segmentName}`);
 
   try {
     const res = await loggedRequest(
@@ -66,16 +66,14 @@ async function createSegment(segmentName) {
     );
 
     console.log("Segment creation response:", JSON.stringify(res.data));
-k
+
     // Adjust this depending on the actual response
     return res.data.id || res.data.segment?.id; 
   } catch (error) {
     if (error.response?.status === 409) {
       console.log(`⚠️ segment already exists: ${segmentName}`);
-      await deleteSegment(segmentName);
     } else {
-      // throw error;
-      console.log('error segment creation');
+      console.log('error ' + error);
     }
 
 
@@ -88,7 +86,7 @@ k
 
  async function uploadKeys(segmentName, keys) {
 
-        const url = `${BASE_URL}/segments/${ENVIRONMENT_ID}/${segmentName}/uploadKeys?replace=false`;
+        const url = `${BASE_URL}/segments/${ENVIRONMENT_ID}/${segmentName}/uploadKeys?replace=true`;
 
         const updateConfig = {
             method: 'put',
@@ -114,7 +112,7 @@ k
 
 
  async function deleteSegment(segmentName) {
-      console.log(`⚠️ deleteSegment segment: ${segmentName}`);
+    console.log(`⚠️ deleteSegment segment: ${segmentName}`);
 
 
     let config = {
@@ -130,21 +128,25 @@ k
         "description": 'burning existing segmentName'
       }
     };
-
+    console.log('deleteSegment', config);
     axios.request(config)
     .then((response) => {
-      console.log('deactivateSegment success');
+    console.log(`⚠️ deleteSegment segment: ${segmentName} success`);
+      console.log('deleteSegment success');
     })
     .catch((error) => {
+    console.log(`⚠️ deleteSegment segment: ${segmentName} fail`);
       console.log(error);
     });
+
+    await sleep(1000);
 
 }
 
 
 
- async function activateSegment(segmentName) {
-    console.log('activateSegment');
+ async function enableSegment(segmentName) {
+    console.log('enableSegment');
 
     let config = {
       method: 'post',
@@ -158,43 +160,12 @@ k
     };
     axios.request(config)
     .then((response) => {
-      console.log(`⚠️ activated segment: ${segmentName}`);
+      console.log(`⚠️ enabled segment: ${segmentName}`);
     })
     .catch((error) => {
-      console.log(`⚠️ Segment activateSegment already exists: ${segmentName}`);
+      console.log(`⚠️ Segment already exists: ${segmentName}`);
     });
   }
-
- // async function enableSegment(segmentName) {
- //    console.log('enableSegment');
- //    let fail = false;
- //    let config = {
- //      method: 'post',
- //      maxBodyLength: Infinity,
- //      url: 'https://api.split.io/internal/api/v2/segments/' + segmentName,
- //      headers: { 
- //        'x-api-key': HARNESS_API_KEY, 
- //        'Content-Type': 'application/json'
- //      },
- //      data : {}
- //    };
- //    axios.request(config)
- //    .then((response) => {
- //      console.log('enableSegment success');
- //    })
- //    .catch((error) => {
- //      fail = true;
- //      console.log(`⚠️ Segment enableSegment already exists: ${segmentName}`);
- //    });
- //    if(fail) {
- //      await deleteSegment(segmentName);
- //      await enableSegment(segmentName);
- //      sleep(1000);
- //    }
-
-
-// }
-
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));l
@@ -208,12 +179,12 @@ async function main() {
   for (let i = 0; i < length; i++) {
     console.log('i', i);
     segmentName = `${SEGMENT_PREFIX}_${i + 1}`;
-    await createSegment(segmentName);
-    console.log('main');
-    console.log('main segmentName', segmentName);
+    await createSegment(segmentName); 
     const keys = {keys: allKeys, comment:"migrated segment"};
-    await activateSegment(segmentName);
+    await enableSegment(segmentName);
     await uploadKeys(segmentName, keys);
+
+    sleep(1000);
   }
 
   console.log("🎉 All done.");
