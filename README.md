@@ -31,8 +31,9 @@ Unless you know you're using a custom traffic type, choose "user" as shown.
 
 Make sure your environment variables are flushed to the shell, with "source <env>"
 
-Node.js.
+bash
 ```
+source env # your four environment variables in an env file, setting discussion above.
 npm install
 node migrate-segment.js
 ```
