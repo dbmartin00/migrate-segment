@@ -6,6 +6,8 @@ This tool is a building block to success.
 
 ## What is it?
 
+A sample script showing segment migration.  Source data is only in dummy form, so coding is required to complete the job.
+
 A node.js script that takes no arguments, and an environment variable config:
 
 ```
