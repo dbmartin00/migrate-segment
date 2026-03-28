@@ -51,7 +51,7 @@ There are four key steps that show as numbered green checks in the logging:
 
 The deletion clears the deck for a fresh segment.  This may not be desired behavior.  A "skip cache" of finished segments could be implemented.  This approach takes a clean slate to each segment.
 
-Segments are not ready for keys on creation. They need to be enabled an an environment, step three.
+Segments are not ready for keys on creation. They may need to be enabled in an environment, step three.
 
 The final uploadKeys step pushes keys to segment, 10,000 at time up to 100,000 .  Larger segments should be handled manually.
 
