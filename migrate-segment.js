@@ -23,7 +23,6 @@ let i = 1;
 // --- Config ---
 const SEGMENT_PREFIX = "gorgias";
 
-const exists = [];
 
 // --- Axios instance ---
 const api = axios.create({
@@ -73,7 +72,7 @@ k
   } catch (error) {
     if (error.response?.status === 409) {
       console.log(`⚠️ segment already exists: ${segmentName}`);
-      exists[segmentName] = 'true';
+      await deleteSegment(segmentName);
     } else {
       // throw error;
       console.log('error segment creation');
@@ -114,39 +113,43 @@ k
 }
 
 
- // async function deactivateSegment(segmentName) {
- //    console.log('enableSegment');
+ async function deleteSegment(segmentName) {
+      console.log(`⚠️ deleteSegment segment: ${segmentName}`);
 
- //    let config = {
- //      method: 'delete',
- //      maxBodyLength: Infinity,
- //      url: `https://api.split.io/internal/api/v2/segments/${ENVIRONMENT_ID}/${segmentName}`,
- //      headers: { 
- //        'x-api-key': HARNESS_API_KEY, 
- //        'Content-Type': 'application/json'
- //      },
- //      data : {}
- //    };
 
- //    axios.request(config)
- //    .then((response) => {
- //      console.log('deactivateSegment success');
- //    })
- //    .catch((error) => {
- //      console.log(error);
- //    });
+    let config = {
+      method: 'delete',
+      maxBodyLength: Infinity,
+      url: `https://api.split.io/internal/api/v2/segments/ws/${WORKSPACE_ID}/${segmentName}`,
+      headers: { 
+        'x-api-key': HARNESS_API_KEY, 
+        'Content-Type': 'application/json'
+      },
+      data : {
+        "name": segmentName, // Mandatory
+        "description": 'burning existing segmentName'
+      }
+    };
 
-// }
+    axios.request(config)
+    .then((response) => {
+      console.log('deactivateSegment success');
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 
- async function enableSegment(segmentName) {
-    console.log('enableSegment');
-    if(exists[segmentName]) {
-      console.log('skipping ' + segmentName);
-    }
+}
+
+
+
+ async function activateSegment(segmentName) {
+    console.log('activateSegment');
+
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'https://api.split.io/internal/api/v2/segments/' + segmentName,
+      url: `https://api.split.io/internal/api/v2/segments/${ENVIRONMENT_ID}/${segmentName}`,
       headers: { 
         'x-api-key': HARNESS_API_KEY, 
         'Content-Type': 'application/json'
@@ -155,13 +158,42 @@ k
     };
     axios.request(config)
     .then((response) => {
-      console.log('enableSegment success');
+      console.log(`⚠️ activated segment: ${segmentName}`);
     })
     .catch((error) => {
-      console.log(`⚠️ Segment enableSegment already exists: ${segmentName}`);
+      console.log(`⚠️ Segment activateSegment already exists: ${segmentName}`);
     });
+  }
 
-}
+ // async function enableSegment(segmentName) {
+ //    console.log('enableSegment');
+ //    let fail = false;
+ //    let config = {
+ //      method: 'post',
+ //      maxBodyLength: Infinity,
+ //      url: 'https://api.split.io/internal/api/v2/segments/' + segmentName,
+ //      headers: { 
+ //        'x-api-key': HARNESS_API_KEY, 
+ //        'Content-Type': 'application/json'
+ //      },
+ //      data : {}
+ //    };
+ //    axios.request(config)
+ //    .then((response) => {
+ //      console.log('enableSegment success');
+ //    })
+ //    .catch((error) => {
+ //      fail = true;
+ //      console.log(`⚠️ Segment enableSegment already exists: ${segmentName}`);
+ //    });
+ //    if(fail) {
+ //      await deleteSegment(segmentName);
+ //      await enableSegment(segmentName);
+ //      sleep(1000);
+ //    }
+
+
+// }
 
 
 function sleep(ms) {
@@ -171,7 +203,7 @@ function sleep(ms) {
 // --- Main process ---
 async function main() {
 
-  const length = 1;
+  const length = 5;
 
   for (let i = 0; i < length; i++) {
     console.log('i', i);
@@ -180,7 +212,7 @@ async function main() {
     console.log('main');
     console.log('main segmentName', segmentName);
     const keys = {keys: allKeys, comment:"migrated segment"};
-    await enableSegment(segmentName);
+    await activateSegment(segmentName);
     await uploadKeys(segmentName, keys);
   }
 
