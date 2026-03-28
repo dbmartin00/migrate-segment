@@ -62,9 +62,11 @@ Repeated for each segment.
 
 Keys should be JSON imported from external source.
 
-## Delays
+## Notes
 
 The back end can't handle too many expensive segment changes at once.  The tool is throttled.   At ten seconds per segment, the tool is consistently successul.  Lowering or removing the throttle will have bad results.
+
+It is normal for uploadKeys to run twice.
 
 ## Tools
 
