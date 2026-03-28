@@ -64,7 +64,7 @@ The final uploadKeys step pushes keys to segment, 10,000 at time up to 100,000 .
 
 Repeated for each segment.
 
-Keys should be JSON imported from external source.
+Keys should be JSON imported from external source.  Use the included src directory and JSON color files for reference.
 
 ## Notes
 
