@@ -4,6 +4,9 @@ Moving segments from an outside source to Harness FME?
 
 This tool is a building block to success.
 
+![Segment Migration](https://images.unsplash.com/photo-1543465077-db45d34b88a5?q=80&w=765&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D "Segment Migration")
+
+
 ## What is it?
 
 A sample script showing segment migration.  Source data is only in dummy form, so coding is required to complete the job.
@@ -13,7 +16,7 @@ A node.js script that takes no arguments, and an environment variable config:
 ```
 export HARNESS_API_KEY=
 export WORKSPACE_ID=
-export ENVIRONMENT_ID=Snow
+export ENVIRONMENT_ID=
 export TRAFFIC_TYPE=user
 ```
 
@@ -23,7 +26,7 @@ You must have an admin account API key with the following privilege to make the 
 
 The WORKSPACE_ID is in the URL when you are usign FME, look for /ws/<long id>
 
-ENVIRONMENT_ID can be the plain text name of your FME environment (e.g. "Default").
+ENVIRONMENT_ID must be full "coded ID" with Project in FME console
 
 Unless you know you're using a custom traffic type, choose "user" as shown.
 
