@@ -80,6 +80,8 @@ The back end can't handle too many expensive segment changes at once.  The tool 
 
 **blasts.js** deletes all eligible segments!!! CAUTION!!!
 
+**generate.js** makes a 10,000 key segment for testing.
+
 ## Author
 
 david.martin@harness.io
