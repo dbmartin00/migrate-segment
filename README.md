@@ -4,6 +4,8 @@ Moving segments from an outside source to Harness FME?
 
 This tool is a building block to success.
 
+Read on past the parking lot for the details.
+
 ![Segment Migration](https://images.unsplash.com/photo-1543465077-db45d34b88a5?q=80&w=765&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D "Segment Migration")
 
 
