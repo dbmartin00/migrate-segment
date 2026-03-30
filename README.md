@@ -41,7 +41,7 @@ npm install
 node migrate-segment.js src/
 ```
 
-The default script creates three sample JSON segments from files in a src/ directory argument.
+The default script creates three simple JSON segments and a bulk 10,000 key segment. The files are in the src/ directory.
 
 ## How does it work?
 
