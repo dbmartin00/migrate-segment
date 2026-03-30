@@ -9,7 +9,7 @@ This tool is a building block to success.
 
 ## What is it?
 
-A sample script showing segment migration.  Source data is only in dummy form, so coding is required to complete the job.
+A sample script showing segment migration.  Source data is in a directory of JSON files in a Harness schema.  Look in src/ directory for examples, more below. 
 
 A node.js script that takes no arguments, and an environment variable config:
 
