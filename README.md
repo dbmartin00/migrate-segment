@@ -38,7 +38,7 @@ bash
 ```
 source env # your four environment variables in an env file, setting discussion above.
 npm install
-node migrate-segment.js
+node migrate-segment.js src/
 ```
 
 The default script creates three sample JSON segments from files in a src/ directory argument.
