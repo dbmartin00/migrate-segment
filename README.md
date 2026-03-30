@@ -76,6 +76,8 @@ The back end can't handle too many expensive segment changes at once.  The tool 
 
 **cleanup.js** will delete one segment at time to assist with testing.
 
+**blasts.js** deletes all eligible segments!!! CAUTION!!!
+
 ## Author
 
 david.martin@harness.io
