@@ -4,7 +4,7 @@ Moving segments from an outside source to Harness FME?  Moving from one Harness 
 
 If you are migrating from another tool, this tool is a building block to success.  You must still extract and copy segments, in the expected JSON schema, to use this tool to load the segments.
 
-If you are copying from one project to another, this will will extract the ssegment data and allow you to load it to a new Project in two separate steps.
+If you are copying from one project to another, this will will extract the segment data and allow you to load it to a new Project in two separate steps.
 
 ## INVENTORY
 ```
