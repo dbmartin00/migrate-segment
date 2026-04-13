@@ -46,6 +46,28 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Tracks the most recently observed rate-limit headers
+const rateLimit = { limit: null, remaining: null };
+
+function updateRateLimit(headers) {
+  if (headers['x-ratelimit-limit'])     rateLimit.limit     = parseInt(headers['x-ratelimit-limit']);
+  if (headers['x-ratelimit-remaining']) rateLimit.remaining = parseInt(headers['x-ratelimit-remaining']);
+}
+
+// Returns a delay in ms scaled to how close we are to the rate limit.
+// No headers yet → 500 ms (conservative default).
+// Plenty of headroom → 100 ms.  Getting close → up to 2000 ms.
+function adaptiveSleep() {
+  if (rateLimit.remaining === null) return sleep(500);
+  const { limit, remaining } = rateLimit;
+  let ms;
+  if (limit && remaining / limit < 0.1)      ms = 2000;  // < 10% left — back off hard
+  else if (limit && remaining / limit < 0.25) ms = 1000;  // < 25% left — slow down
+  else                                         ms = 100;   // plenty of headroom
+  console.log(`  ⏱  rate limit ${remaining}/${limit ?? '?'} remaining — sleeping ${ms}ms`);
+  return sleep(ms);
+}
+
 function isValidSchema(obj) {
   return (
     obj &&
@@ -93,15 +115,22 @@ function loadSourceFiles(dir) {
   return validSources;
 }
 
-async function loggedRequest(method, url, data) {
+async function loggedRequest(method, url, data, retries = 3) {
   console.log("➡️ REQUEST", method, url);
-  // if (data) console.log("Payload:", JSON.stringify(data, null, 2));
 
   try {
     const res = await api.request({ method, url, data });
+    updateRateLimit(res.headers);
     console.log("⬅️ RESPONSE", res.status);
     return res;
   } catch (error) {
+    if (error.response?.status === 429 && retries > 0) {
+      const retryAfter = error.response.headers['retry-after'];
+      const waitMs = retryAfter ? parseInt(retryAfter) * 1000 : 15000;
+      console.log(`⏳ Rate limited — waiting ${waitMs / 1000}s before retry (${retries} left)...`);
+      await sleep(waitMs);
+      return loggedRequest(method, url, data, retries - 1);
+    }
     console.log("⬅️ RESPONSE ERROR", error.response?.status);
     console.log("Data:", JSON.stringify(error.response?.data, null, 2));
     throw error;
@@ -136,7 +165,7 @@ async function deleteSegment(segmentName) {
     }
   }
 
-  await sleep(1000);
+  await adaptiveSleep();
 }
 
 async function createSegment(segmentName) {
@@ -164,7 +193,7 @@ async function createSegment(segmentName) {
     }
   }
 
-  await sleep(500);
+  await adaptiveSleep();
 }
 
  async function enableSegmentInEnvironment(segmentName) {
@@ -193,42 +222,48 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));l
 }
 
-async function uploadKeys(segmentName, payload, retry) {
+async function uploadKeys(segmentName, payload, retries = 3) {
     console.log('✅ 4 - uploadKeys: ' + segmentName);
 
-        const url = `${BASE_URL}/segments/${ENVIRONMENT_ID}/${segmentName}/uploadKeys?replace=true`;
+    const url = `${BASE_URL}/segments/${ENVIRONMENT_ID}/${segmentName}/uploadKeys?replace=true`;
 
-        // console.log('payload', payload);
+    const updateConfig = {
+        method: 'put',
+        url: url,
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': HARNESS_API_KEY,
+        },
+        data: payload
+    };
 
-        const updateConfig = {
-            method: 'put',
-            url: url,
-            headers: {
-              'Content-Type': 'application/json',
-              'x-api-key': HARNESS_API_KEY,
-            },
-            data: payload 
-        }
+    try {
+      const res = await axios(updateConfig);
+      updateRateLimit(res.headers);
+      console.log('✅ keys: ' + segmentName);
+    } catch (error) {
+      if (error.response?.status === 429 && retries > 0) {
+        const retryAfter = error.response.headers['retry-after'];
+        const waitMs = retryAfter ? parseInt(retryAfter) * 1000 : 15000;
+        console.log(`⏳ Rate limited on uploadKeys — waiting ${waitMs / 1000}s before retry (${retries} left)...`);
+        await sleep(waitMs);
+        return uploadKeys(segmentName, payload, retries - 1);
+      }
+      console.log('🚫 uploadKeys failed: ' + segmentName, error.response?.status || error.message);
+    }
+}
 
-        await axios(updateConfig)
-        .then(function (response) {
-          console.log('✅ keys: ' + segmentName);
-        })
-        .catch(function(error) {
-          console.log('🚫 keys updated to segment: ' + segmentName);
-          // console.log(error);
-          // retry
-          // if(retry) {
-          //   //await sleep(1000);
-            
-          //   uploadKeys(segmentName, payload, false);
-
-          // }
-        });
+function formatElapsed(ms) {
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600).toString().padStart(2, '0');
+  const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
+  const sec = (s % 60).toString().padStart(2, '0');
+  return `${h}:${m}:${sec}`;
 }
 
 // --- Main ---
 async function main() {
+  const startTime = Date.now();
   console.log('✅ main');
 
   const sources = loadSourceFiles(SOURCE_DIR);
@@ -244,11 +279,11 @@ async function main() {
     await enableSegmentInEnvironment(segmentName);
     await uploadKeys(segmentName, src.data, true);
 
-    await sleep(5000);
+    await adaptiveSleep();
     console.log('======================');
   }
 
-  console.log("🎉 All done.");
+  console.log(`🎉 All done. (${formatElapsed(Date.now() - startTime)})`);
 }
 
 // --- Run ---

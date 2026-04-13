@@ -1,34 +1,45 @@
-## Harness Segment Migration
+## Harness Segment Copy and Migration
 
-Moving segments from an outside source to Harness FME?  
+Moving segments from an outside source to Harness FME?  Moving from one Harness FME Project to another?  This set of tools is useful for moving segment data.
 
-This tool is a building block to success.
+If you are migrating from another tool, this tool is a building block to success.  You must still extract and copy segments, in the expected JSON schema, to use this tool to load the segments.
+
+If you are copying from one project to another, this will will extract the ssegment data and allow you to load it to a new Project in two separate steps.
+
+## INVENTORY
+```
+export HARNESS_API_KEY=sat.** 
+export WORKSPACE_ID=<from FME admin settings console>
+export ENVIRONMENT_ID=<from FME admin settings console>
+export TRAFFIC_TYPE=user
+```
+
+YOU WILL NEED TO SWAP OR CREATE NEW NEW ENVIRONMENT VARIABLES, AT LEAST FOR WORKSPACE AND ENVIRONMENT, WHEN YOU GO FROM dump-segments.js (SOURCE) SEGMENTS TO migrate-segment.js (DEST).
+
+When you create an admin level API key, it should be able to read from both projects/workspaces.
+
+**dump-segments.js**
+  Exports all segments (and their keys) from Harness FME/Split to local JSON files.  Each file is named {segmentName}.json and matches the schema expected by migrate-segment.js.
+
+**migrate-segment.js**
+  Migrates segments from JSON source to a target Harness FME project and environment.
+
+**generate.js** - generate a segment with 10,000 keys, for testing
+**cleanup.js** - delete a segment
+**blast.js** - delete all segments (danger!)
+
+##
 
 Read on past the parking lot for the details.
 
 ![Segment Migration](https://images.unsplash.com/photo-1543465077-db45d34b88a5?q=80&w=765&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D "Segment Migration")
 
 
-## What is it?
-
-A sample script showing segment migration.  Source data is in a directory of JSON files in a Harness schema.  Look in src/ directory for examples, more below. 
-
-A node.js script that takes no arguments, and an environment variable config:
-
-```
-export HARNESS_API_KEY=
-export WORKSPACE_ID=
-export ENVIRONMENT_ID=
-export TRAFFIC_TYPE=user
-```
-
 You must have an admin account API key with the following privilege to make the **sat.***  key, privilege:
 
  - FME Administrator
 
-The WORKSPACE_ID is in the URL when you are usign FME, look for /ws/<long id>
-
-ENVIRONMENT_ID must be full "coded ID" with Project in FME console
+Find IDs using the admin settings console in the UI.
 
 Unless you know you're using a custom traffic type, choose "user" as shown.
 
