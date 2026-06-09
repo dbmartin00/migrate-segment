@@ -27,6 +27,14 @@ export DEST_TRAFFIC_TYPE=user
 
 **Note:** When you create an admin level API key, it can read from and write to multiple projects/workspaces. You can use the same API key for both SRC_HARNESS_API_KEY and DEST_HARNESS_API_KEY if appropriate.
 
+You must have an admin account API key with the following privilege to make the **sat.***  key, privilege:
+
+ - FME Administrator
+
+Find IDs using the admin settings console in the UI.
+
+Unless you know you're using a custom traffic type, choose "user" as shown.
+
 **dump-segments.js**
   Exports all segments (and their keys) from Harness FME/Split to local JSON files.  Each file is named {segmentName}.json and matches the schema expected by migrate-segment.js.
 
@@ -44,13 +52,6 @@ Read on past the parking lot for the details.
 ![Segment Migration](https://images.unsplash.com/photo-1543465077-db45d34b88a5?q=80&w=765&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D "Segment Migration")
 
 
-You must have an admin account API key with the following privilege to make the **sat.***  key, privilege:
-
- - FME Administrator
-
-Find IDs using the admin settings console in the UI.
-
-Unless you know you're using a custom traffic type, choose "user" as shown.
 
 ## How do I run it?
 
