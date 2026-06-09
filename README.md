@@ -6,17 +6,26 @@ If you are migrating from another tool, this tool is a building block to success
 
 If you are copying from one project to another, this will will extract the segment data and allow you to load it to a new Project in two separate steps.
 
-## INVENTORY
-```
-export HARNESS_API_KEY=sat.** 
-export WORKSPACE_ID=<from FME admin settings console>
-export ENVIRONMENT_ID=<from FME admin settings console>
-export TRAFFIC_TYPE=user
+## Environment Configuration
+
+All tools now use a unified set of environment variables with SRC_ and DEST_ prefixes for cleaner source and destination management.
+
+### Source Configuration (for dump-segments.js)
+```bash
+export SRC_HARNESS_API_KEY=sat.**
+export SRC_WORKSPACE_ID=<from FME admin settings console>
+export SRC_ENVIRONMENT_ID=<from FME admin settings console>
 ```
 
-YOU WILL NEED TO SWAP OR CREATE NEW NEW ENVIRONMENT VARIABLES, AT LEAST FOR WORKSPACE AND ENVIRONMENT, WHEN YOU GO FROM dump-segments.js (SOURCE) SEGMENTS TO migrate-segment.js (DEST).
+### Destination Configuration (for migrate-segment.js)
+```bash
+export DEST_HARNESS_API_KEY=sat.**
+export DEST_WORKSPACE_ID=<from FME admin settings console>
+export DEST_ENVIRONMENT_ID=<from FME admin settings console>
+export DEST_TRAFFIC_TYPE=user
+```
 
-When you create an admin level API key, it should be able to read from both projects/workspaces.
+**Note:** When you create an admin level API key, it can read from and write to multiple projects/workspaces. You can use the same API key for both SRC_HARNESS_API_KEY and DEST_HARNESS_API_KEY if appropriate.
 
 **dump-segments.js**
   Exports all segments (and their keys) from Harness FME/Split to local JSON files.  Each file is named {segmentName}.json and matches the schema expected by migrate-segment.js.

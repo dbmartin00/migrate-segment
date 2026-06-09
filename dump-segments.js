@@ -9,13 +9,13 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 
-const HARNESS_API_KEY = process.env.HARNESS_API_KEY;
-const WORKSPACE_ID = process.env.WORKSPACE_ID;
-const ENVIRONMENT_ID = process.env.ENVIRONMENT_ID;
+const HARNESS_API_KEY = process.env.SRC_HARNESS_API_KEY;
+const WORKSPACE_ID = process.env.SRC_WORKSPACE_ID;
+const ENVIRONMENT_ID = process.env.SRC_ENVIRONMENT_ID;
 
 if (!HARNESS_API_KEY || !WORKSPACE_ID || !ENVIRONMENT_ID) {
   console.error(
-    `❌ Missing required environment variables: HARNESS_API_KEY: ${HARNESS_API_KEY} WORKSPACE_ID: ${WORKSPACE_ID}, ENVIRONMENT_ID: ${ENVIRONMENT_ID}`
+    `❌ Missing required environment variables: SRC_HARNESS_API_KEY: ${HARNESS_API_KEY} SRC_WORKSPACE_ID: ${WORKSPACE_ID}, SRC_ENVIRONMENT_ID: ${ENVIRONMENT_ID}`
   );
   process.exit(1);
 }

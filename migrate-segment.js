@@ -3,14 +3,14 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 
-const HARNESS_API_KEY = process.env.HARNESS_API_KEY;
-const WORKSPACE_ID = process.env.WORKSPACE_ID;
-const ENVIRONMENT_ID = process.env.ENVIRONMENT_ID;
-const TRAFFIC_TYPE = process.env.TRAFFIC_TYPE;
+const HARNESS_API_KEY = process.env.DEST_HARNESS_API_KEY;
+const WORKSPACE_ID = process.env.DEST_WORKSPACE_ID;
+const ENVIRONMENT_ID = process.env.DEST_ENVIRONMENT_ID;
+const TRAFFIC_TYPE = process.env.DEST_TRAFFIC_TYPE;
 
 if (!HARNESS_API_KEY || !WORKSPACE_ID || !ENVIRONMENT_ID || !TRAFFIC_TYPE) {
   console.error(
-    `Missing required environment variables: HARNESS_API_KEY: ${HARNESS_API_KEY} WORKSPACE_ID ${WORKSPACE_ID}, ENVIRONMENT_ID ${ENVIRONMENT_ID}, TRAFFIC_TYPE ${TRAFFIC_TYPE}`
+    `Missing required environment variables: DEST_HARNESS_API_KEY: ${HARNESS_API_KEY} DEST_WORKSPACE_ID ${WORKSPACE_ID}, DEST_ENVIRONMENT_ID ${ENVIRONMENT_ID}, DEST_TRAFFIC_TYPE ${TRAFFIC_TYPE}`
   );
   process.exit(1);
 }
