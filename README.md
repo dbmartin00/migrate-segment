@@ -54,12 +54,22 @@ Unless you know you're using a custom traffic type, choose "user" as shown.
 
 ## How do I run it?
 
-Make sure your environment variables are flushed to the shell, with "source <env>"
+WARNING!  Existing destination segments are deleted on each migrate-segment run.
+
+Dump your segments to a src/ directory.  It creates each segment as a JSON with a list of keys in the segment.
+
+```bash
+npm install
+source env # environment variables discussed above.
+node dump-segments.js src/
+```
+
+If the segments came across, you can copy them to the destination:
 
 bash
 ```
-source env # your four environment variables in an env file, setting discussion above.
 npm install
+source env # environment variables discussed above.
 node migrate-segment.js src/
 ```
 
@@ -74,7 +84,7 @@ There are four key steps that show as numbered green checks in the logging:
  3. Enable segment in your environment
  4. Upload keys to your segment
 
-The deletion clears the deck for a fresh segment.  This may not be desired behavior.  A "skip cache" of finished segments could be implemented.  This approach takes a clean slate to each segment.
+The deletion clears the deck for a fresh segment.
 
 Segments are not ready for keys on creation. They may need to be enabled in an environment, step three.
 
@@ -90,7 +100,7 @@ Keys should be JSON imported from external source.  Use the included src directo
 
 ## Notes
 
-The back end can't handle too many expensive segment changes at once.  The tool is throttled.   At ten seconds per segment, the tool is consistently successul.  Lowering or removing the throttle will have bad results.
+The back end can't handle too many expensive segment changes at once.  The tool is throttled.   Lowering or removing the throttle will have bad results.
 
 
 
