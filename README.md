@@ -67,8 +67,7 @@ node dump-segments.js src/
 
 If the segments came across, you can copy them to the destination:
 
-bash
-```
+```bash
 npm install
 source env # environment variables discussed above.
 node migrate-segment.js src/
